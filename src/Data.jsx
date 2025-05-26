@@ -4,20 +4,13 @@ import { useEffect, useState } from "react";
 export default function Data() {
   const [pokemonList, setPokemonList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showMore, setShowMore] = useState(30);
 
   const fetchAllPokemon = async () => {
-    let allResults = [];
-    let nextUrl = "https://pokeapi.co/api/v2/pokemon?limit=100";
-    
-    while (nextUrl) {
-      const res = await fetch(nextUrl);
-      const data = await res.json();
-      allResults = allResults.concat(data.results);
-      nextUrl = data.next;
-    }
-
+    const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1000");
+    const data = await res.json();
     const detailedData = await Promise.all(
-      allResults.map(p => fetch(p.url).then(res => res.json()))
+      data.results.map(p => fetch(p.url).then(res => res.json()))
     );
 
     setPokemonList(detailedData);
@@ -28,14 +21,18 @@ export default function Data() {
     fetchAllPokemon();
   }, []);
 
+  const handleShowMore = () => {
+    setShowMore(showMore + 30);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 to-purple-200 p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">Semua Pokémon</h1>
+    <div className="min-h-screen bg-purple-100 px-6">
+      <h1 className="text-3xl font-bold text-center mb-6">Semua Pokemon</h1>
       {loading ? (
-        <p className="text-center text-gray-600">Memuat semua Pokémon...</p>
+        <p className="text-center text-gray-600">Memuat semua Pokemon...</p>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {pokemonList.map((pokemon) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {pokemonList.slice(0, showMore).map((pokemon) => (
             <div
               key={pokemon.id}
               className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center"
@@ -60,6 +57,17 @@ export default function Data() {
           ))}
         </div>
       )}
+      {showMore < pokemonList.length && (
+        <div className="flex justify-center w-full py-6">
+          <button
+            className="bg-purple-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+            onClick={handleShowMore}
+          >
+            Muat lebih banyak
+          </button>
+        </div>
+      )}
     </div>
   );
 }
+

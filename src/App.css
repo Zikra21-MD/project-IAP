@@ -1,1 +1,8 @@
 @import "tailwindcss";
+@plugin "daisyui";
+
+.tabs a {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: black;
+}

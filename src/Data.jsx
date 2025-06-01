@@ -6,6 +6,8 @@ export default function Data() {
   const [loading, setLoading] = useState(true);
   const [showMore, setShowMore] = useState(30);
   const [selectedStage, setSelectedStage] = useState(null);
+  const [selectedPokemon, setSelectedPokemon] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchEvolutionChain = async (url) => {
     try {
@@ -27,7 +29,7 @@ export default function Data() {
   };
 
   const fetchAllPokemon = async () => {
-    const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1302");
+    const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=300");
     const data = await res.json();
 
     const detailedData = await Promise.all(
@@ -62,6 +64,16 @@ export default function Data() {
 
   const handleShowMore = () => {
     setShowMore((prev) => prev + 30);
+  };
+
+  const openModal = (pokemon) => {
+    setSelectedPokemon(pokemon);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedPokemon(null);
   };
 
   const filteredPokemon = selectedStage === null
@@ -135,7 +147,8 @@ export default function Data() {
           {filteredPokemon.slice(0, showMore).map((pokemon) => (
             <div
               key={pokemon.id}
-              className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center relative"
+              className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center relative cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => openModal(pokemon)}
             >
               <img
                 src={pokemon.sprites.front_default}
@@ -159,6 +172,115 @@ export default function Data() {
           ))}
         </div>
       )}
+      {isModalOpen && selectedPokemon && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={closeModal}
+        >
+          <div 
+            className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bg-purple-500 p-4 flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-black capitalize">
+                {selectedPokemon.name}
+              </h2>
+              <button 
+                onClick={closeModal}
+                className="text-black text-2xl hover:text-purple-200"
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="flex justify-center mb-4">
+                <img
+                  src={selectedPokemon.sprites.front_default}
+                  alt={selectedPokemon.name}
+                  className="w-40 h-40"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                  <h3 className="font-semibold text-black">Tinggi</h3>
+                  <p className="text-lg text-black">{(selectedPokemon.height / 10).toFixed(1)} m</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-black">Berat</h3>
+                  <p className="text-lg text-black">{(selectedPokemon.weight / 10).toFixed(1)} kg</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-black">Tipe</h3>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {selectedPokemon.types.map((type) => (
+                      <span
+                        key={type.type.name}
+                        className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full"
+                      >
+                        {type.type.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-black">Evolusi</h3>
+                  <p className="text-lg text-black">
+                    {selectedPokemon.stage === 0 
+                      ? "Awal" 
+                      : selectedPokemon.stage === 1 
+                        ? "Pertama" 
+                        : "Kedua"}
+                  </p>
+                </div>
+              </div>
+
+              <h3 className="font-semibold text-black mb-2">Statistik</h3>
+              <div className="space-y-2">
+                {selectedPokemon.stats.map((stat) => (
+                  <div key={stat.stat.name} className="flex items-center">
+                    <span className="w-32 text-sm font-medium text-black capitalize">
+                      {stat.stat.name.replace('-', ' ')}
+                    </span>
+                    <div className="flex-1 h-4 bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-purple-500  rounded-full"
+                        style={{ width: `${Math.min(100, stat.base_stat)}%` }}
+                      ></div>
+                    </div>
+                    <span className="w-8 text-right text-sm font-medium">
+                      {stat.base_stat}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <h3 className="font-semibold text-black mt-4 mb-2">Kemampuan</h3>
+              <div className="flex flex-wrap gap-2">
+                {selectedPokemon.abilities.map((ability) => (
+                  <span
+                    key={ability.ability.name}
+                    className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm"
+                  >
+                    {ability.ability.name.replace('-', ' ')}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-gray-50 px-6 py-4 flex justify-end">
+              <button
+                onClick={closeModal}
+                className="bg-purple-500 hover:bg-purple-600 text-black font-medium py-2 px-6 rounded-full transition-colors"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showMore < pokemonList.length && (
         <div className="flex justify-center w-full py-6">
           <button
@@ -172,4 +294,3 @@ export default function Data() {
     </div>
   );
 }
-

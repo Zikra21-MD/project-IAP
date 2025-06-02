@@ -8,6 +8,7 @@ export default function Data() {
   const [selectedStage, setSelectedStage] = useState(null);
   const [selectedPokemon, setSelectedPokemon] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchEvolutionChain = async (url) => {
     try {
@@ -76,9 +77,13 @@ export default function Data() {
     setSelectedPokemon(null);
   };
 
-  const filteredPokemon = selectedStage === null
-    ? pokemonList
-    : pokemonList.filter((p) =>
+  const filteredPokemon = pokemonList.filter((p) =>
+    p.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const displayedPokemon = selectedStage === null
+    ? filteredPokemon
+    : filteredPokemon.filter((p) =>
         selectedStage === 0
           ? p.stage === 0
           : selectedStage === 1
@@ -91,6 +96,15 @@ export default function Data() {
       <h1 className="text-3xl font-bold text-center text-black mb-6">
         Semua Pokemon
       </h1>
+      <div className="flex justify-center mb-6">
+        <input
+          type="text"
+          placeholder="Cari Pokemon"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="border rounded-lg text-black py-2 px-4 placeholder:text-black"
+        />
+      </div>
       <div role="tablist" className="tabs tabs-border justify-center mb-6">
         <a
           role="tab"
@@ -144,7 +158,7 @@ export default function Data() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {filteredPokemon.slice(0, showMore).map((pokemon) => (
+          {displayedPokemon.slice(0, searchQuery ? displayedPokemon.length : showMore).map((pokemon) => (
             <div
               key={pokemon.id}
               className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center relative cursor-pointer hover:shadow-lg transition-shadow"
@@ -281,7 +295,7 @@ export default function Data() {
         </div>
       )}
 
-      {showMore < pokemonList.length && (
+      {showMore < filteredPokemon.length && !searchQuery && (
         <div className="flex justify-center w-full py-6">
           <button
             className="bg-purple-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
@@ -294,3 +308,4 @@ export default function Data() {
     </div>
   );
 }
+

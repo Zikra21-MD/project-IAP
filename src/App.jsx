@@ -4,14 +4,22 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import Data from './Data'
 import Profile from './Profile'
+import { useRef } from 'react'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const dataRef = useRef(null)
+  const [darkMode, setDarkMode] = useState(false)
+  const toggleDarkMode = () => setDarkMode(prev => !prev)
+  const scrollToData = () => {
+    dataRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
-    <div className="flex flex-col space-y-0">
-      <Profile />
-      <Data />
+    <div className={darkMode ? 'bg-gray-900 text-white min-h-screen' : 'bg-purple-100 text-black min-h-screen'}>
+      <Profile darkMode={darkMode} toggleDarkMode={toggleDarkMode} scrollToData={scrollToData} />
+      <div ref={dataRef}>
+        <Data darkMode={darkMode} />
+      </div>
     </div>
   )
 }

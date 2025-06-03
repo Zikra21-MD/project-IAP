@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ThreeDot } from "react-loading-indicators";
 
-export default function Data() {
+export default function Data({ darkMode }) {
   const [pokemonList, setPokemonList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showMore, setShowMore] = useState(30);
@@ -92,8 +92,8 @@ export default function Data() {
       );
 
   return (
-    <div className="min-h-screen bg-purple-100 px-6">
-      <h1 className="text-3xl font-bold text-center text-black mb-6">
+    <div className={`min-h-screen px-6 ${darkMode ? 'bg-gray-900 text-white' : 'bg-purple-100 text-black'}`}>
+      <h1 className={`text-3xl font-bold text-center mb-6 ${darkMode ? 'text-white' : 'text-black'}`}>
         Semua Pokemon
       </h1>
       <div className="flex justify-center mb-6">
@@ -102,13 +102,15 @@ export default function Data() {
           placeholder="Cari Pokemon"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="border rounded-lg text-black py-2 px-4 placeholder:text-black"
+          className={`border rounded-lg py-2 px-4 placeholder:${darkMode ? 'text-gray-300' : 'text-black'} 
+            ${darkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-white text-black border-gray-300'}`}
         />
       </div>
-      <div role="tablist" className="tabs tabs-border justify-center mb-6">
+      <div role="tablist" className={`tabs tabs-border justify-center mb-6 ${darkMode ? 'border-gray-700' : ''}`}>
         <a
           role="tab"
-          className={`tab ${selectedStage === null ? "tab-active" : ""}`}
+          href="#"
+          className={`tab ${selectedStage === null ? "tab-active" : ""} ${darkMode ? 'text-white' : 'text-black'}`}
           onClick={(e) => {
             e.preventDefault();
             setSelectedStage(null);
@@ -119,7 +121,8 @@ export default function Data() {
         </a>
         <a
           role="tab"
-          className={`tab ${selectedStage === 0 ? "tab-active" : ""}`}
+          href="#"
+          className={`tab ${selectedStage === 0 ? "tab-active" : ""} ${darkMode ? 'text-white' : 'text-black'}`}
           onClick={(e) => {
             e.preventDefault();
             setSelectedStage(0);
@@ -130,7 +133,8 @@ export default function Data() {
         </a>
         <a
           role="tab"
-          className={`tab ${selectedStage === 1 ? "tab-active" : ""}`}
+          href="#"
+          className={`tab ${selectedStage === 1 ? "tab-active" : ""} ${darkMode ? 'text-white' : 'text-black'}`}
           onClick={(e) => {
             e.preventDefault();
             setSelectedStage(1);
@@ -141,7 +145,8 @@ export default function Data() {
         </a>
         <a
           role="tab"
-          className={`tab ${selectedStage === 2 ? "tab-active" : ""}`}
+          href="#"
+          className={`tab ${selectedStage === 2 ? "tab-active" : ""} ${darkMode ? 'text-white' : 'text-black'}`}
           onClick={(e) => {
             e.preventDefault();
             setSelectedStage(2);
@@ -154,14 +159,16 @@ export default function Data() {
 
       {loading ? (
         <div className="flex justify-center">
-          <ThreeDot variant="bounce" color="#000000" size="medium" />
+          <ThreeDot variant="bounce" color={darkMode ? "#ffffff" : "#000000"} size="medium" />
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {displayedPokemon.slice(0, searchQuery ? displayedPokemon.length : showMore).map((pokemon) => (
             <div
               key={pokemon.id}
-              className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center relative cursor-pointer hover:shadow-lg transition-shadow"
+              className={`rounded-lg shadow-md p-4 flex flex-col items-center relative cursor-pointer hover:shadow-lg transition-shadow ${
+                darkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'
+              }`}
               onClick={() => openModal(pokemon)}
             >
               <img
@@ -169,7 +176,7 @@ export default function Data() {
                 alt={pokemon.name}
                 className="w-20 h-20 mb-2"
               />
-              <h2 className="capitalize font-semibold text-black">
+              <h2 className="capitalize font-semibold">
                 {pokemon.name}
               </h2>
               <div className="flex flex-wrap justify-center gap-1 mt-1">
@@ -188,20 +195,20 @@ export default function Data() {
       )}
       {isModalOpen && selectedPokemon && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          className={`fixed inset-0 flex items-center justify-center z-50 p-4 ${darkMode ? 'bg-black bg-opacity-80' : 'bg-black bg-opacity-50'}`}
           onClick={closeModal}
         >
           <div 
-            className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
+            className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-purple-500 p-4 flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-black capitalize">
+            <div className={`p-4 flex justify-between items-center ${darkMode ? 'bg-gray-700' : 'bg-purple-500'}`}>
+              <h2 className="text-2xl font-bold capitalize">
                 {selectedPokemon.name}
               </h2>
               <button 
                 onClick={closeModal}
-                className="text-black text-2xl hover:text-purple-200"
+                className={`${darkMode ? 'text-white hover:text-gray-300' : 'text-black hover:text-purple-200'} text-2xl`}
               >
                 &times;
               </button>
@@ -218,20 +225,20 @@ export default function Data() {
 
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div>
-                  <h3 className="font-semibold text-black">Tinggi</h3>
-                  <p className="text-lg text-black">{(selectedPokemon.height / 10).toFixed(1)} m</p>
+                  <h3 className="font-semibold">Tinggi</h3>
+                  <p className="text-lg">{(selectedPokemon.height / 10).toFixed(1)} m</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-black">Berat</h3>
-                  <p className="text-lg text-black">{(selectedPokemon.weight / 10).toFixed(1)} kg</p>
+                  <h3 className="font-semibold">Berat</h3>
+                  <p className="text-lg">{(selectedPokemon.weight / 10).toFixed(1)} kg</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-black">Tipe</h3>
+                  <h3 className="font-semibold">Tipe</h3>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {selectedPokemon.types.map((type) => (
                       <span
                         key={type.type.name}
-                        className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full"
+                        className="text-xs bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full"
                       >
                         {type.type.name}
                       </span>
@@ -239,8 +246,8 @@ export default function Data() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-black">Evolusi</h3>
-                  <p className="text-lg text-black">
+                  <h3 className="font-semibold">Evolusi</h3>
+                  <p className="text-lg">
                     {selectedPokemon.stage === 0 
                       ? "Awal" 
                       : selectedPokemon.stage === 1 
@@ -250,55 +257,49 @@ export default function Data() {
                 </div>
               </div>
 
-              <h3 className="font-semibold text-black mb-2">Statistik</h3>
+              <h3 className="font-semibold mb-2">Statistik</h3>
               <div className="space-y-2">
                 {selectedPokemon.stats.map((stat) => (
                   <div key={stat.stat.name} className="flex items-center">
-                    <span className="w-32 text-sm font-medium text-black capitalize">
+                    <span className="w-32 text-sm font-medium capitalize">
                       {stat.stat.name.replace('-', ' ')}
                     </span>
                     <div className="flex-1 h-4 bg-gray-200 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-purple-500  rounded-full"
-                        style={{ width: `${Math.min(100, stat.base_stat)}%` }}
+                        className={`${darkMode ? 'bg-purple-600' : 'bg-purple-500'}`}
+                        style={{ width: `${(stat.base_stat / 150) * 100}%` }}
                       ></div>
                     </div>
-                    <span className="w-8 text-right text-sm font-medium">
-                      {stat.base_stat}
-                    </span>
+                    <span className="w-10 text-right ml-2 font-bold">{stat.base_stat}</span>
                   </div>
                 ))}
               </div>
 
-              <h3 className="font-semibold text-black mt-4 mb-2">Kemampuan</h3>
-              <div className="flex flex-wrap gap-2">
-                {selectedPokemon.abilities.map((ability) => (
-                  <span
-                    key={ability.ability.name}
-                    className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm"
-                  >
-                    {ability.ability.name.replace('-', ' ')}
-                  </span>
-                ))}
+              <div className="mt-6 flex justify-center">
+                <button
+                  onClick={closeModal}
+                  className={`font-medium py-2 px-6 rounded-full transition-colors ${
+                    darkMode
+                      ? "bg-purple-700 hover:bg-purple-600 text-white"
+                      : "bg-purple-500 hover:bg-purple-600 text-black"
+                  }`}
+                >
+                  Tutup
+                </button>
               </div>
-            </div>
-
-            <div className="bg-gray-50 px-6 py-4 flex justify-end">
-              <button
-                onClick={closeModal}
-                className="bg-purple-500 hover:bg-purple-600 text-black font-medium py-2 px-6 rounded-full transition-colors"
-              >
-                Tutup
-              </button>
             </div>
           </div>
         </div>
       )}
 
-      {showMore < filteredPokemon.length && !searchQuery && (
-        <div className="flex justify-center w-full py-6">
+      {!searchQuery && !loading && displayedPokemon.length > showMore && (
+        <div className="flex justify-center my-6">
           <button
-            className="bg-purple-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+            className={`font-bold py-2 px-4 rounded-full ${
+              darkMode
+                ? "bg-purple-700 hover:bg-purple-600 text-white"
+                : "bg-purple-500 hover:bg-blue-700 text-white"
+            }`}
             onClick={handleShowMore}
           >
             Muat lebih banyak
@@ -308,4 +309,3 @@ export default function Data() {
     </div>
   );
 }
-

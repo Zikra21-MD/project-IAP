@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ThreeDot } from "react-loading-indicators";
+import pikachu from "/src/assets/Daco_540500.png";
 
 export default function Data({ darkMode }) {
   const [pokemonList, setPokemonList] = useState([]);
@@ -129,7 +130,7 @@ export default function Data({ darkMode }) {
             setShowMore(30);
           }}
         >
-          Evolusi Awal
+          Basic
         </a>
         <a
           role="tab"
@@ -141,7 +142,7 @@ export default function Data({ darkMode }) {
             setShowMore(30);
           }}
         >
-          Evolusi Pertama
+          Evolusi kedua
         </a>
         <a
           role="tab"
@@ -153,7 +154,7 @@ export default function Data({ darkMode }) {
             setShowMore(30);
           }}
         >
-          Evolusi Kedua
+          Evolusi ketiga
         </a>
       </div>
 
@@ -161,7 +162,21 @@ export default function Data({ darkMode }) {
         <div className="flex justify-center">
           <ThreeDot variant="bounce" color={darkMode ? "#ffffff" : "#000000"} size="medium" />
         </div>
-      ) : (
+      ) : displayedPokemon.length === 0 ? (
+  <div className="text-center text-lg font-semibold py-10">
+    {searchQuery ? (
+      <div>
+        <img src={pikachu} alt="Pokemon tidak ditemukan" className="mx-auto mt-4 w-20 h-20" />
+        <p>Pokemon tidak ditemukan.</p>
+      </div>
+    ) : (
+      <div>
+        <p>Tidak ada data tersedia.</p>
+        <img src="/path/to/no-data-image.png" alt="Tidak ada data tersedia" className="mx-auto mt-4" />
+      </div>
+    )}
+  </div>
+) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {displayedPokemon.slice(0, searchQuery ? displayedPokemon.length : showMore).map((pokemon) => (
             <div
@@ -194,104 +209,97 @@ export default function Data({ darkMode }) {
         </div>
       )}
       {isModalOpen && selectedPokemon && (
-        <div 
-          className={`fixed inset-0 flex items-center justify-center z-50 p-4 ${darkMode ? 'bg-black bg-opacity-80' : 'bg-black bg-opacity-50'}`}
-          onClick={closeModal}
-        >
-          <div 
-            className={`rounded-xl shadow-2xl w-full max-w-md overflow-hidden ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className={`p-4 flex justify-between items-center ${darkMode ? 'bg-gray-700' : 'bg-purple-500'}`}>
-              <h2 className="text-2xl font-bold capitalize">
-                {selectedPokemon.name}
-              </h2>
-              <button 
-                onClick={closeModal}
-                className={`${darkMode ? 'text-white hover:text-gray-300' : 'text-black hover:text-purple-200'} text-2xl`}
+  <div
+    className={`fixed inset-0 flex items-center justify-center z-50 p-2`}
+    style={{background: darkMode ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.8)'}}
+    onClick={closeModal}
+  >
+    <div
+      className={`rounded-lg shadow-xl w-full max-w-md overflow-hidden transform transition-all ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className={`p-3 flex justify-center items-center ${darkMode ? 'bg-gray-800' : 'bg-purple-500 text-white'}`}>
+        <h2 className="text-lg sm:text-xl font-bold capitalize">{selectedPokemon.name}</h2>
+      </div>
+
+      <div className="p-4 space-y-3">
+        <div className="flex flex-col items-center">
+          <img
+            src={selectedPokemon.sprites.front_default}
+            alt={selectedPokemon.name}
+            className="w-28 h-28 sm:w-36 sm:h-36 mb-2"
+          />
+          <div className="flex flex-wrap justify-center gap-1">
+            {selectedPokemon.types.map((type) => (
+              <span
+                key={type.type.name}
+                className="text-xs sm:text-sm bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded-full font-medium"
               >
-                &times;
-              </button>
-            </div>
-
-            <div className="p-6">
-              <div className="flex justify-center mb-4">
-                <img
-                  src={selectedPokemon.sprites.front_default}
-                  alt={selectedPokemon.name}
-                  className="w-40 h-40"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div>
-                  <h3 className="font-semibold">Tinggi</h3>
-                  <p className="text-lg">{(selectedPokemon.height / 10).toFixed(1)} m</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold">Berat</h3>
-                  <p className="text-lg">{(selectedPokemon.weight / 10).toFixed(1)} kg</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold">Tipe</h3>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {selectedPokemon.types.map((type) => (
-                      <span
-                        key={type.type.name}
-                        className="text-xs bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full"
-                      >
-                        {type.type.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-semibold">Evolusi</h3>
-                  <p className="text-lg">
-                    {selectedPokemon.stage === 0 
-                      ? "Awal" 
-                      : selectedPokemon.stage === 1 
-                        ? "Pertama" 
-                        : "Kedua"}
-                  </p>
-                </div>
-              </div>
-
-              <h3 className="font-semibold mb-2">Statistik</h3>
-              <div className="space-y-2">
-                {selectedPokemon.stats.map((stat) => (
-                  <div key={stat.stat.name} className="flex items-center">
-                    <span className="w-32 text-sm font-medium capitalize">
-                      {stat.stat.name.replace('-', ' ')}
-                    </span>
-                    <div className="flex-1 h-4 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
-                        className={`${darkMode ? 'bg-purple-600' : 'bg-purple-500'}`}
-                        style={{ width: `${(stat.base_stat / 150) * 100}%` }}
-                      ></div>
-                    </div>
-                    <span className="w-10 text-right ml-2 font-bold">{stat.base_stat}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 flex justify-center">
-                <button
-                  onClick={closeModal}
-                  className={`font-medium py-2 px-6 rounded-full transition-colors ${
-                    darkMode
-                      ? "bg-purple-700 hover:bg-purple-600 text-white"
-                      : "bg-purple-500 hover:bg-purple-600 text-black"
-                  }`}
-                >
-                  Tutup
-                </button>
-              </div>
-            </div>
+                {type.type.name}
+              </span>
+            ))}
           </div>
         </div>
-      )}
 
+        <div className="grid grid-cols-2 gap-3 text-xs sm:text-sm">
+          <div>
+            <h4 className="font-semibold">Tinggi</h4>
+            <p>{(selectedPokemon.height / 10).toFixed(1)} m</p>
+          </div>
+          <div>
+            <h4 className="font-semibold">Berat</h4>
+            <p>{(selectedPokemon.weight / 10).toFixed(1)} kg</p>
+          </div>
+          <div>
+            <h4 className="font-semibold">Evolusi</h4>
+            <p>
+              {selectedPokemon.stage === 0
+                ? "basic"
+                : selectedPokemon.stage === 1
+                ? "kedua"
+                : "Ketiga"}
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h4 className="font-semibold mb-2">Statistik</h4>
+          <div className="space-y-2">
+            {selectedPokemon.stats.map((stat) => (
+              <div key={stat.stat.name}>
+                <div className="flex justify-between text-xs font-medium capitalize mb-1">
+                  <span>{stat.stat.name.replace('-', ' ')}</span>
+                  <span>{stat.base_stat}</span>
+                </div>
+                <div className="w-full h-2 bg-gray-300 rounded-full overflow-hidden">
+                  <div
+                    className={`${darkMode ? 'bg-purple-600' : 'bg-purple-500'} h-full rounded-full transition-all`}
+                    style={{
+                      width: `${Math.min((stat.base_stat / 150) * 100, 100)}%`
+                    }}
+                  ></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex justify-center pt-3">
+          <button
+            onClick={closeModal}
+            className={`font-medium py-1 px-4 rounded-full transition-colors ${
+              darkMode
+                ? "bg-purple-700 hover:bg-purple-600 text-white"
+                : "bg-purple-500 hover:bg-purple-600 text-white"
+            }`}
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
       {!searchQuery && !loading && displayedPokemon.length > showMore && (
         <div className="flex justify-center my-6">
           <button
@@ -309,3 +317,4 @@ export default function Data({ darkMode }) {
     </div>
   );
 }
+
